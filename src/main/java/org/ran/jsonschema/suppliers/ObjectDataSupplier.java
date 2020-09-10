@@ -17,6 +17,8 @@ public class ObjectDataSupplier extends AbstractDataSupplier<ObjectSchema, Map<S
     @Override
     public Map<String, Object> generateDataFromSchema(ObjectSchema schema) {
         Map<String, Object> mapData = new HashMap<>();
+
+        // todo add support for min and max properties
         Set<String> properties = schema.getPropertySchemas().keySet();
         properties.forEach(stream -> {
             Schema propertySchema = schema.getPropertySchemas().get(stream);
