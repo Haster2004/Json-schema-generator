@@ -102,6 +102,23 @@ class StringExampleGeneratorTest {
         });
     }
 
+    @Test
+    public void stringWithFormatGenerateCorrectly() throws Exception {
+        String schema = "" +
+                "{\n" +
+                "  \"type\": \"object\",\n" +
+                "  \"properties\": {\n" +
+                "    \"strField\": {\n" +
+                "      \"type\": \"string\", \"format\": \"email\", \"minLength\": 9, \"maxLength\": 9 \n" +
+                "    }\n" +
+                "  },\n" +
+                "    \"required\": [\"strField\"]\n" +
+                "}";
+
+        String json = generateObjectAsString(schema, mapper);
+        validateJsonBySchema(json, schema);
+    }
+
     private static String generateObjectAsString(String schema, ObjectMapper mapper) throws JsonProcessingException {
         Object generatedData = new SchemaDataSupplier().get(schema);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(generatedData);

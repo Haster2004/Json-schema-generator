@@ -12,11 +12,11 @@ import static org.ran.jsonschema.RandomUtils.getRandomInteger;
 
 public class SimpleRandomProvider {
 
-    public static final AbstractDataSupplier<EnumSchema, String> enumDataProvider = new AbstractDataSupplier<EnumSchema, String>() {
+    public static final AbstractDataSupplier<EnumSchema, Object> enumDataProvider = new AbstractDataSupplier<EnumSchema, Object>() {
         @Override
-        public String generateDataFromSchema(EnumSchema schema) {
+        public Object generateDataFromSchema(EnumSchema schema) {
             int position = getRandomInteger(schema.getPossibleValues().size() - 1, 0, 1);
-            return String.valueOf(schema.getPossibleValuesAsList().get(position));
+            return schema.getPossibleValuesAsList().get(position);
         }
     };
 
