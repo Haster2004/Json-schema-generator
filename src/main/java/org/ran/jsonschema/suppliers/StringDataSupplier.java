@@ -1,6 +1,8 @@
 package org.ran.jsonschema.suppliers;
 
+import org.everit.json.schema.FormatValidator;
 import org.everit.json.schema.StringSchema;
+import org.everit.json.schema.internal.EmailFormatValidator;
 import org.ran.jsonschema.JsonGenerationException;
 
 import java.util.Optional;
@@ -27,6 +29,15 @@ public class StringDataSupplier extends AbstractDataSupplier<StringSchema, Strin
 
         Random random = new Random();
         int maxDerived = Math.max(random.nextInt(max+1 - min) + min, 1);
+
+        FormatValidator formatValidator = schema.getFormatValidator();
+        if (formatValidator instanceof EmailFormatValidator) {
+            if (maxDerived < 3) {
+                throw new JsonGenerationException("String: can't generate email less than 3 symbols long");
+            }
+            maxDerived = (maxDerived - 1) / 2;
+            return getRandomString(maxDerived) + "@" + getRandomString(maxDerived);
+        }
 
         return getRandomString(maxDerived);
     }

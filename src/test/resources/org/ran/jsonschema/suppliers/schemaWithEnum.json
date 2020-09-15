@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "six": {
+      "enum": [
+        2,
+        3.5,
+        true,
+        [
+          "almost empty aray"
+        ],
+        {
+          "one-item": "object"
+        },
+        null
+      ]
+    }
+  }
+}

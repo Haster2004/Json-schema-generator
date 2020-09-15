@@ -1,8 +1,17 @@
 package org.ran.jsonschema.suppliers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.junit.jupiter.api.Test;
 import org.ran.jsonschema.SchemaDataSupplier;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CombinedDataSupplierTest {
     @Test
@@ -20,6 +29,20 @@ public class CombinedDataSupplierTest {
 
         System.out.println(json);
         //schema.validate(new JSONObject(new JSONTokener(json)));
+    }
+
+    @Test
+    public void SchemaWithNestedOneOfGenerateCorrectly() {
+        try (InputStream inputStream = getClass().getResourceAsStream("schemaWithNestedOneOf.json")) {
+            JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+            Schema schema = SchemaLoader.load(rawSchema);
+            Object generatedData = new SchemaDataSupplier().get(schema);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(generatedData);
+            schema.validate(new JSONObject(json));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

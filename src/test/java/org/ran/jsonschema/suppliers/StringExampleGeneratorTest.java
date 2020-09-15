@@ -2,6 +2,7 @@ package org.ran.jsonschema.suppliers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.everit.json.schema.Schema;
 import org.everit.json.schema.StringSchema;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.everit.json.schema.loader.internal.DefaultSchemaClient;
@@ -11,6 +12,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ran.jsonschema.JsonGenerationException;
 import org.ran.jsonschema.SchemaDataSupplier;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StringExampleGeneratorTest {
     StringDataSupplier generator = new StringDataSupplier();
@@ -100,6 +106,34 @@ class StringExampleGeneratorTest {
         Assertions.assertThrows(JsonGenerationException.class, () -> {
             generateObjectAsString(schema, mapper);
         });
+    }
+
+    @Test
+    public void stringWithEmailFormatGenerateCorrectly() {
+        try (InputStream inputStream = getClass().getResourceAsStream("schemaWithEmail.json")) {
+            JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+            Schema schema = SchemaLoader.load(rawSchema);
+            Object generatedData = new SchemaDataSupplier().get(schema);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(generatedData);
+            assertTrue(json.matches("\\{\"strField\":\"[a-zA-Z]{4}@[a-zA-Z]{4}\"}"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void stringWithUriFormatGenerateCorrectly() {
+        try (InputStream inputStream = getClass().getResourceAsStream("schemaWithUri.json")) {
+            JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+            Schema schema = SchemaLoader.load(rawSchema);
+            Object generatedData = new SchemaDataSupplier().get(schema);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(generatedData);
+            schema.validate(new JSONObject(json));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static String generateObjectAsString(String schema, ObjectMapper mapper) throws JsonProcessingException {

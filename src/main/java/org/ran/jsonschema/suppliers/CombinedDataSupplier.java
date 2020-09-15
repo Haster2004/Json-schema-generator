@@ -8,6 +8,8 @@ import org.everit.json.schema.StringSchema;
 import org.ran.jsonschema.JsonGenerationException;
 import org.ran.jsonschema.SupplyResolver;
 
+import java.util.stream.Collectors;
+
 import static org.ran.jsonschema.RandomUtils.getRandomInteger;
 
 public class CombinedDataSupplier extends AbstractDataSupplier<CombinedSchema, Object> {
@@ -17,7 +19,13 @@ public class CombinedDataSupplier extends AbstractDataSupplier<CombinedSchema, O
         String ofType = schema.getCriterion().toString();
 
         if ("allOf".equalsIgnoreCase(ofType)) {
-            Schema result = schema.getSubschemas().stream().reduce(this::mergeSchemas).get();
+            Schema result;
+            if (schema.getSubschemas().stream().collect(Collectors.groupingBy(subSchema -> subSchema.getClass())).size() > 1) {
+                // one of subschemas is a common part for combined schemas
+                result = schema.getSubschemas().stream().filter(subSchema -> subSchema instanceof CombinedSchema).reduce(this::mergeSchemas).get();
+            } else {
+                result = schema.getSubschemas().stream().reduce(this::mergeSchemas).get();
+            }
             return SupplyResolver.resolve(result).forSchema(result);
         } else {
             // for oneOf and anyOf return one random element

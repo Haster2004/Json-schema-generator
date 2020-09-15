@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "strField": {
+      "type": "string",
+      "format": "email",
+      "minLength": 9,
+      "maxLength": 9
+    }
+  },
+  "required": [
+    "strField"
+  ]
+}
